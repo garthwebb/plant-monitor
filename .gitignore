@@ -50,3 +50,18 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Eagle temp files
+*.[bs]#[0-9]
+
+# Ignore the CLion/intellij config directory
+**/.idea/
+
+# Ignore the test directory
+/test/
+
+# Ignore Mac OS poops
+/.DS_Store
+
+# Don't include the Clion debug dir
+cmake-build-debug/
