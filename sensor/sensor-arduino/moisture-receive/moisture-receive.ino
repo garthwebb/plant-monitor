@@ -24,8 +24,9 @@ void setup() {
   radio.begin();
   // Set the PA Level low to prevent power supply related issues since this is a
   // getting_started sketch, and the likelihood of close proximity of the devices. RF24_PA_MAX is default.
-  radio.setPALevel(RF24_PA_LOW);
-  //radio.setPALevel(RF24_PA_MAX);
+  //radio.setPALevel(RF24_PA_LOW);
+  radio.setPALevel(RF24_PA_MAX);
+  radio.setDataRate(RF24_250KBPS);
   
   // Open a writing and reading pipe on each radio, with opposite addresses
   radio.openWritingPipe(HOST_RADIO_ADDR);
@@ -40,14 +41,15 @@ void setup() {
 }
 
 int readStatus(void) {
-  uint32_t payload[4];
-  uint32_t cmd, id, cycles, moisture;
+  uint32_t payload[5];
+  uint32_t cmd, id, cycles, vcc, moisture;
   radio.read(&payload, sizeof(payload));
 
   cmd = payload[0];
   id = payload[1];
   cycles = payload[2];
-  moisture = payload[3];
+  vcc = payload[3];
+  moisture = payload[4];
 
   Serial.print(F("Got command: "));
   Serial.println(cmd);
@@ -55,6 +57,8 @@ int readStatus(void) {
   Serial.println(id);
   Serial.print(F("    cycles: "));
   Serial.println(cycles);
+  Serial.print(F("    vcc (mV): "));
+  Serial.println(vcc);
   Serial.print(F("    moisture: "));
   Serial.println(moisture);
 }

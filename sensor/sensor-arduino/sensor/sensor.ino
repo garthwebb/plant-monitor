@@ -20,9 +20,18 @@
 
 //--------- Defines
 
-#define MOISTURE_ADC 0
-#define MOISTURE_POWER 10
-#define MOISTURE_STARTUP_MS 250
+#define SENSOR_ADC_PIN 1
+#define SENSOR_POWER_PIN 9
+#define START_UP_DELAY_MS 250
+
+#define STATUS_LED_PIN 10
+
+#define SETUP_BUTTON_PIN 8
+
+// analogue ref = VCC, input channel = VREF
+#define ADMUX_READ_INTERNAL 0x21
+// analogue ref = VCC, input channel = ADC1
+#define ADMUX_READ_ADC1 0x01
 
 #define SELF_ID 0xfeed
 
@@ -30,8 +39,8 @@
 #define SELF_RADIO_ADDR (byte *) "2Node"
 
 // CE and CSN are configurable, specified values for ATtiny84 as connected above
-#define RAIDIO_CE 2
-#define RAIDIO_CSN 3
+#define RAIDIO_CE_PIN 2
+#define RAIDIO_CSN_PIN 3
 
 #define COMMAND_STATUS 0x01
 
@@ -48,9 +57,13 @@
 #define WDT_8s    9
 
 // Sleep for 8 seconds at a time
-#define WDT_TIMEOUT WDT_8s
+//#define WDT_TIMEOUT WDT_8s
+#define WDT_TIMEOUT WDT_2s
+
 // With 8 seconds per sleep cycle, 38 cycles gives just over 5min
-#define SLEEP_CYCLES 38
+//#define SLEEP_CYCLES 38
+#define SLEEP_CYCLES 1
+
 
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
@@ -59,13 +72,15 @@
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
 
-#define SENSOR_POWER_ON digitalWrite(MOISTURE_POWER, HIGH)
-#define SENSOR_POWER_OFF digitalWrite(MOISTURE_POWER, LOW)
+#define SENSOR_POWER_ON digitalWrite(SENSOR_POWER_PIN, HIGH)
+#define SENSOR_POWER_OFF digitalWrite(SENSOR_POWER_PIN, LOW)
 
+#define LED_ON digitalWrite(STATUS_LED_PIN, HIGH)
+#define LED_OFF digitalWrite(STATUS_LED_PIN, LOW)
 
 //--------- Globals
 
-RF24 radio(RAIDIO_CE, RAIDIO_CSN);
+RF24 radio(RAIDIO_CE_PIN, RAIDIO_CSN_PIN);
 
 uint32_t sleep_cycles = 0;
 uint32_t status_cycles = 0;
@@ -75,8 +90,13 @@ volatile boolean reset_watchdog = true;
 //--------- Functions
 
 void setup() {
-  pinMode(MOISTURE_ADC, INPUT);
-  pinMode(MOISTURE_POWER, OUTPUT);
+  pinMode(SENSOR_ADC_PIN, INPUT);
+  pinMode(SETUP_BUTTON_PIN, INPUT);
+  pinMode(SENSOR_POWER_PIN, OUTPUT);
+  pinMode(STATUS_LED_PIN, OUTPUT);
+
+  // Use VCC as the analog referene (default, but let's just call it out)
+  analogReference(DEFAULT);
 
   SENSOR_POWER_ON;
   
@@ -87,7 +107,9 @@ void setup() {
 void initRadio() {
   // Setup and configure rf radio
   radio.begin();
-  radio.setPALevel(RF24_PA_LOW);
+  radio.setPALevel(RF24_PA_MAX);
+  radio.setDataRate(RF24_250KBPS);
+  //radio.setDataRate(RF24_1MBPS);
   radio.setAutoAck(1);
 
   // Max delay between retries & number of retries
@@ -138,16 +160,59 @@ uint8_t construct_prescalar(uint8_t level) {
   return prescalar;
 }
 
-uint16_t getMoistureValue(void) {
-  return analogRead(MOISTURE_ADC);
+// Use avr registers rather than arduino analog read when we're
+// reading from the internal voltage reference rather than a pin.
+void avrReadAnalog() {
+  // start conversion by writing 1 to ADSC
+  sbi(ADCSRA, ADSC);
+
+  // wait until ADSC is clear
+  while ((ADCSRA & (1<<ADSC)) !=0);
+}
+
+uint16_t getAdcValue(void) {
+  uint8_t high, low;
+
+  // Read from analog twice (16.6.2: The first ADC conversion result after switching reference
+  // voltage source may be inaccurate, and the user is advised to discard this result.
+  avrReadAnalog();
+  avrReadAnalog();
+  
+  // this order is needed to guarantee reading of ADC result correctly
+  low  = ADCL;
+  high = ADCH;
+
+  return (high << 8) | (low);
+}
+
+// ASSUMPTION: ADC is enabled AND refernece is set to Vcc AND input is set to 1.1v internal
+double getBatteryVoltage(void) {
+  uint16_t adc_result = getAdcValue();
+
+  // adc = 1024*vref/vcc, therefore vcc = 1024*vref/adc
+  return (1024 * 1.1) / adc_result;
+}
+
+uint16_t getMoistureValue(unsigned long vcc_reading) {
+  // Set the ADC to read from the 1.1V internal source initially  
+  ADMUX = ADMUX_READ_ADC1;
+
+  // Need a delay when switching sources
+  delay(10);
+  
+  return analogRead(SENSOR_ADC_PIN);
 }
 
 int sendStatus(void) {
+  double vcc_reading = getBatteryVoltage();
+  
   uint32_t payload[4];
   payload[0] = COMMAND_STATUS;
   payload[1] = SELF_ID;
   payload[2] = status_cycles;
-  payload[3] = getMoistureValue();
+  payload[3] = (uint32_t) (vcc_reading * 1000);
+  //payload[3]
+  payload[4] = getMoistureValue(vcc_reading);
 
   bool success = true;
   
@@ -203,17 +268,25 @@ void system_sleep() {
 
   // System continues execution here when watchdog timed out 
   sleep_disable();
+}
 
+void wake_system() {
   // Power on and startup.  The code following the delay takes
   // on order of a a few ms, so there's little use trying include that
   // time to reduce this delay.
-  SENSOR_POWER_ON;  
-  delay(MOISTURE_STARTUP_MS);
+  SENSOR_POWER_ON;
+
+  // Start the radio
+  radio.powerUp();
 
   // Switch Analog to Digitalconverter ON
   sbi(ADCSRA, ADEN);
 
-  radio.powerUp();
+  // Set the ADC to read from the 1.1V internal source initially  
+  ADMUX = ADMUX_READ_INTERNAL;
+
+  // Give everything time to settle in (caps charge in the sensor, ADC startup, etc).
+  delay(START_UP_DELAY_MS);
 }
 
 // Watchdog Interrupt Service / is executed when watchdog timed out
@@ -223,14 +296,19 @@ ISR(WDT_vect) {
 
 void loop(void) {
   unsigned long ack;
+  unsigned long vcc_reading;
 
   if (reset_watchdog) {
     reset_watchdog = false;
 
     if (sleep_cycles <= 0) {
+      wake_system();
+
+      LED_ON;
       sendStatus();
       ack = waitForAck();
       sleep_cycles = SLEEP_CYCLES;
+      LED_OFF;
     }
 
     system_sleep();
