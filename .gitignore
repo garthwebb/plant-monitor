@@ -65,3 +65,7 @@ dkms.conf
 
 # Don't include the Clion debug dir
 cmake-build-debug/
+
+# Ignore eagle lock files
+*.brd.lck
+*.sch.lck
