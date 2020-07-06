@@ -33,6 +33,8 @@
 // analogue ref = VCC, input channel = ADC1
 #define ADMUX_READ_ADC1 0x01
 
+#define MOISTURE_MAX_VAL 3.3l
+
 #define SELF_ID 0xfeed
 
 #define HOST_RADIO_ADDR (byte *) "1Node"
@@ -57,13 +59,12 @@
 #define WDT_8s    9
 
 // Sleep for 8 seconds at a time
-//#define WDT_TIMEOUT WDT_8s
-#define WDT_TIMEOUT WDT_2s
+#define WDT_TIMEOUT WDT_8s
+//#define WDT_TIMEOUT WDT_2s
 
 // With 8 seconds per sleep cycle, 38 cycles gives just over 5min
-//#define SLEEP_CYCLES 38
-#define SLEEP_CYCLES 1
-
+#define SLEEP_CYCLES 38
+//#define SLEEP_CYCLES 1
 
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
@@ -94,9 +95,6 @@ void setup() {
   pinMode(SETUP_BUTTON_PIN, INPUT);
   pinMode(SENSOR_POWER_PIN, OUTPUT);
   pinMode(STATUS_LED_PIN, OUTPUT);
-
-  // Use VCC as the analog referene (default, but let's just call it out)
-  analogReference(DEFAULT);
 
   SENSOR_POWER_ON;
   
@@ -193,25 +191,30 @@ double getBatteryVoltage(void) {
   return (1024 * 1.1) / adc_result;
 }
 
-uint16_t getMoistureValue(unsigned long vcc_reading) {
+uint16_t getMoistureValue(double vcc) {
+  uint16_t sensor_reading;
+
   // Set the ADC to read from the 1.1V internal source initially  
   ADMUX = ADMUX_READ_ADC1;
 
-  // Need a delay when switching sources
+  // Need a delay when switching sources (to be safe; at least to internal 1.1 ref but not sure here)
   delay(10);
-  
-  return analogRead(SENSOR_ADC_PIN);
+
+  sensor_reading = analogRead(SENSOR_ADC_PIN);
+
+  // This adc value calculated against a known but varible vcc that we've just measured.  Adjust
+  // it against the moisture max value that is contant.
+  return sensor_reading * (vcc / MOISTURE_MAX_VAL);
 }
 
 int sendStatus(void) {
   double vcc_reading = getBatteryVoltage();
   
-  uint32_t payload[4];
+  uint32_t payload[5];
   payload[0] = COMMAND_STATUS;
   payload[1] = SELF_ID;
   payload[2] = status_cycles;
   payload[3] = (uint32_t) (vcc_reading * 1000);
-  //payload[3]
   payload[4] = getMoistureValue(vcc_reading);
 
   bool success = true;
