@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.5.2">
+<eagle version="9.6.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="yes"/>
@@ -403,21 +403,6 @@ Moisture Sensor</text>
 <wire x1="3.175" y1="-13.63" x2="1.905" y2="-13.63" width="0.1524" layer="51"/>
 <wire x1="1.905" y1="-13.63" x2="1.27" y2="-12.995" width="0.1524" layer="51"/>
 </package>
-<package name="SC70-6">
-<smd name="P$1" x="-0.65" y="-1.1" dx="0.35" dy="0.85" layer="1"/>
-<smd name="P$2" x="0" y="-1.1" dx="0.35" dy="0.85" layer="1"/>
-<smd name="P$3" x="0.65" y="-1.1" dx="0.35" dy="0.85" layer="1"/>
-<smd name="P$4" x="0.65" y="1.1" dx="0.35" dy="0.85" layer="1"/>
-<smd name="P$5" x="0" y="1.1" dx="0.35" dy="0.85" layer="1"/>
-<smd name="P$6" x="-0.65" y="1.1" dx="0.35" dy="0.85" layer="1"/>
-<wire x1="-1.075" y1="0.7" x2="1.075" y2="0.7" width="0.127" layer="51"/>
-<wire x1="1.075" y1="0.7" x2="1.075" y2="-0.7" width="0.127" layer="21"/>
-<wire x1="1.075" y1="-0.7" x2="-1.075" y2="-0.7" width="0.127" layer="51"/>
-<wire x1="-1.075" y1="0.7" x2="-1.075" y2="-0.7" width="0.127" layer="21"/>
-<circle x="-0.7" y="-0.3" radius="0.1" width="0.127" layer="21"/>
-<text x="-1" y="2" size="0.8128" layer="25">&gt;NAME</text>
-<text x="-1" y="-3" size="0.8128" layer="27">&gt;VALUE</text>
-</package>
 <package name="JST-PH-2">
 <smd name="P$3" x="-3.35" y="-2.775" dx="1.5" dy="3.4" layer="1"/>
 <smd name="P$4" x="3.35" y="-2.775" dx="1.5" dy="3.4" layer="1"/>
@@ -429,16 +414,6 @@ Moisture Sensor</text>
 <smd name="P$2" x="0.9" y="0" dx="0.8" dy="1.2" layer="1"/>
 <text x="-1.27" y="1.016" size="0.6096" layer="25">&gt;NAME</text>
 <text x="-1.27" y="-1.524" size="0.6096" layer="27">&gt;VALUE</text>
-</package>
-<package name="LQH3NPN">
-<smd name="P$1" x="-1.1" y="0" dx="0.8" dy="2.7" layer="1"/>
-<smd name="P$2" x="1.1" y="0" dx="0.8" dy="2.7" layer="1"/>
-<wire x1="-1.5" y1="1.5" x2="1.5" y2="1.5" width="0.127" layer="21"/>
-<wire x1="1.5" y1="1.5" x2="1.5" y2="-1.5" width="0.127" layer="51"/>
-<wire x1="1.5" y1="-1.5" x2="-1.5" y2="-1.5" width="0.127" layer="21"/>
-<wire x1="-1.5" y1="1.5" x2="-1.5" y2="-1.5" width="0.127" layer="51"/>
-<text x="-1.27" y="2.159" size="0.8128" layer="25">&gt;NAME</text>
-<text x="-1.27" y="-2.794" size="0.8128" layer="27">&gt;VALUE</text>
 </package>
 <package name="SOT-323">
 <smd name="P$1" x="0" y="0.95" dx="0.7" dy="0.9" layer="1"/>
@@ -497,20 +472,6 @@ Moisture Sensor</text>
 <text x="-5.08" y="10.16" size="1.27" layer="95">&gt;NAME</text>
 <text x="-5.08" y="-12.7" size="1.27" layer="96">&gt;VALUE</text>
 </symbol>
-<symbol name="TPS6122X">
-<pin name="L" x="-12.7" y="7.62" length="middle"/>
-<pin name="VIN" x="-12.7" y="2.54" length="middle"/>
-<pin name="EN" x="-12.7" y="-2.54" length="middle"/>
-<pin name="GND" x="-12.7" y="-7.62" length="middle"/>
-<pin name="VOUT" x="12.7" y="7.62" length="middle" rot="R180"/>
-<pin name="FB" x="12.7" y="2.54" length="middle" rot="R180"/>
-<wire x1="-7.62" y1="10.16" x2="-7.62" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="-7.62" y1="-10.16" x2="7.62" y2="-10.16" width="0.254" layer="94"/>
-<wire x1="7.62" y1="-10.16" x2="7.62" y2="10.16" width="0.254" layer="94"/>
-<wire x1="7.62" y1="10.16" x2="-7.62" y2="10.16" width="0.254" layer="94"/>
-<text x="-7.62" y="11.176" size="1.27" layer="95">&gt;NAME</text>
-<text x="-7.62" y="-12.7" size="1.27" layer="96">&gt;VALUE</text>
-</symbol>
 <symbol name="JST-PH-2">
 <pin name="P$1" x="-7.62" y="2.54" length="middle"/>
 <pin name="P$2" x="-7.62" y="-2.54" length="middle"/>
@@ -520,20 +481,6 @@ Moisture Sensor</text>
 <wire x1="5.08" y1="5.08" x2="-2.54" y2="5.08" width="0.254" layer="94"/>
 <text x="-2.54" y="6.35" size="1.27" layer="95">&gt;NAME</text>
 <text x="-2.54" y="-7.62" size="1.27" layer="96">&gt;VALUE</text>
-</symbol>
-<symbol name="INDUCTOR">
-<wire x1="-5.08" y1="0" x2="-3.81" y2="1.27" width="0.254" layer="94" curve="-90" cap="flat"/>
-<wire x1="-2.54" y1="0" x2="-3.81" y2="1.27" width="0.254" layer="94" curve="90" cap="flat"/>
-<wire x1="-2.54" y1="0" x2="-1.27" y2="1.27" width="0.254" layer="94" curve="-90" cap="flat"/>
-<wire x1="0" y1="0" x2="-1.27" y2="1.27" width="0.254" layer="94" curve="90" cap="flat"/>
-<wire x1="0" y1="0" x2="1.27" y2="1.27" width="0.254" layer="94" curve="-90" cap="flat"/>
-<wire x1="2.54" y1="0" x2="1.27" y2="1.27" width="0.254" layer="94" curve="90" cap="flat"/>
-<wire x1="2.54" y1="0" x2="3.81" y2="1.27" width="0.254" layer="94" curve="-90" cap="flat"/>
-<wire x1="5.08" y1="0" x2="3.81" y2="1.27" width="0.254" layer="94" curve="90" cap="flat"/>
-<pin name="1" x="-7.62" y="0" visible="off" length="short" direction="pas" swaplevel="1"/>
-<pin name="2" x="7.62" y="0" visible="off" length="short" direction="pas" swaplevel="1" rot="R180"/>
-<text x="-5.08" y="2.54" size="1.27" layer="95">&gt;NAME</text>
-<text x="-5.08" y="-2.54" size="1.27" layer="96">&gt;VALUE</text>
 </symbol>
 <symbol name="LED">
 <wire x1="1.27" y1="1.778" x2="0" y2="-0.254" width="0.254" layer="94"/>
@@ -637,27 +584,6 @@ Moisture Sensor</text>
 </device>
 </devices>
 </deviceset>
-<deviceset name="TPS6122X">
-<description>Low Input Voltage, 0.7V Boost Converter With 5.5μA Quiescent Current</description>
-<gates>
-<gate name="G$1" symbol="TPS6122X" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="SC70-6">
-<connects>
-<connect gate="G$1" pin="EN" pad="P$6"/>
-<connect gate="G$1" pin="FB" pad="P$2"/>
-<connect gate="G$1" pin="GND" pad="P$3"/>
-<connect gate="G$1" pin="L" pad="P$5"/>
-<connect gate="G$1" pin="VIN" pad="P$1"/>
-<connect gate="G$1" pin="VOUT" pad="P$4"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
 <deviceset name="JST-PH-2">
 <gates>
 <gate name="G$1" symbol="JST-PH-2" x="0" y="0"/>
@@ -667,31 +593,6 @@ Moisture Sensor</text>
 <connects>
 <connect gate="G$1" pin="P$1" pad="P$1"/>
 <connect gate="G$1" pin="P$2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="INDUCTOR">
-<gates>
-<gate name="G$1" symbol="INDUCTOR" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="0805">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="LQH3NPN" package="LQH3NPN">
-<connects>
-<connect gate="G$1" pin="1" pad="P$1"/>
-<connect gate="G$1" pin="2" pad="P$2"/>
 </connects>
 <technologies>
 <technology name=""/>
@@ -1918,11 +1819,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="SUPPLY5" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="VCC" device=""/>
 <part name="GND5" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
 <part name="GND6" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
-<part name="C5" library="SparkFun" deviceset="CAP" device="0805" value="10u"/>
-<part name="C6" library="SparkFun" deviceset="CAP" device="0805" value="10u"/>
-<part name="U$5" library="GARTH" deviceset="TPS6122X" device=""/>
 <part name="U$8" library="GARTH" deviceset="JST-PH-2" device="" value="BATT"/>
-<part name="U$2" library="GARTH" deviceset="INDUCTOR" device="LQH3NPN" value="4.7u"/>
 <part name="U$6" library="GARTH" deviceset="LED" device=""/>
 <part name="R2" library="SparkFun" deviceset="RESISTOR" device="" value="300"/>
 <part name="GND3" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="GND" device=""/>
@@ -1982,9 +1879,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <instance part="GND4" gate="1" x="29.21" y="-1.27" smashed="yes">
 <attribute name="VALUE" x="26.67" y="-3.81" size="1.778" layer="96"/>
 </instance>
-<instance part="U$1" gate="G$1" x="104.14" y="101.6" smashed="yes">
-<attribute name="NAME" x="99.06" y="109.22" size="1.27" layer="95"/>
-<attribute name="VALUE" x="99.06" y="93.98" size="1.27" layer="96"/>
+<instance part="U$1" gate="G$1" x="76.2" y="88.9" smashed="yes">
+<attribute name="NAME" x="71.12" y="96.52" size="1.27" layer="95"/>
+<attribute name="VALUE" x="71.12" y="81.28" size="1.27" layer="96"/>
 </instance>
 <instance part="U$4" gate="G$1" x="170.18" y="12.7" smashed="yes">
 <attribute name="NAME" x="165.1" y="22.86" size="1.27" layer="95"/>
@@ -1999,25 +1896,9 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <instance part="GND6" gate="1" x="19.05" y="-1.27" smashed="yes">
 <attribute name="VALUE" x="16.51" y="-3.81" size="1.778" layer="96"/>
 </instance>
-<instance part="C5" gate="G$1" x="78.74" y="93.472" smashed="yes">
-<attribute name="NAME" x="80.264" y="96.393" size="1.778" layer="95"/>
-<attribute name="VALUE" x="80.264" y="91.313" size="1.778" layer="96"/>
-</instance>
-<instance part="C6" gate="G$1" x="30.48" y="90.932" smashed="yes">
-<attribute name="NAME" x="32.004" y="93.853" size="1.778" layer="95"/>
-<attribute name="VALUE" x="32.004" y="88.773" size="1.778" layer="96"/>
-</instance>
-<instance part="U$5" gate="G$1" x="58.42" y="96.52" smashed="yes">
-<attribute name="NAME" x="50.8" y="107.696" size="1.27" layer="95"/>
-<attribute name="VALUE" x="50.8" y="83.82" size="1.27" layer="96"/>
-</instance>
 <instance part="U$8" gate="G$1" x="170.18" y="99.06" smashed="yes">
 <attribute name="NAME" x="167.64" y="105.41" size="1.27" layer="95"/>
 <attribute name="VALUE" x="167.64" y="91.44" size="1.27" layer="96"/>
-</instance>
-<instance part="U$2" gate="G$1" x="35.56" y="104.14" smashed="yes">
-<attribute name="NAME" x="30.48" y="106.68" size="1.27" layer="95"/>
-<attribute name="VALUE" x="30.48" y="101.6" size="1.27" layer="96"/>
 </instance>
 <instance part="U$6" gate="G$1" x="-13.97" y="14.224" smashed="yes"/>
 <instance part="R2" gate="G$1" x="-13.97" y="27.94" smashed="yes" rot="R90">
@@ -2081,25 +1962,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <label x="96.52" y="25.4" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$5" gate="G$1" pin="VIN"/>
-<wire x1="45.72" y1="99.06" x2="40.64" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="40.64" y1="99.06" x2="30.48" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="30.48" y1="99.06" x2="25.4" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="99.06" x2="20.32" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="104.14" x2="25.4" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="25.4" y1="104.14" x2="25.4" y2="99.06" width="0.1524" layer="91"/>
-<junction x="25.4" y="99.06"/>
-<pinref part="U$5" gate="G$1" pin="EN"/>
-<wire x1="45.72" y1="93.98" x2="40.64" y2="93.98" width="0.1524" layer="91"/>
-<wire x1="40.64" y1="93.98" x2="40.64" y2="99.06" width="0.1524" layer="91"/>
-<junction x="40.64" y="99.06"/>
-<pinref part="C6" gate="G$1" pin="1"/>
-<wire x1="30.48" y1="96.012" x2="30.48" y2="99.06" width="0.1524" layer="91"/>
-<junction x="30.48" y="99.06"/>
-<label x="15.24" y="99.06" size="1.778" layer="95"/>
-<pinref part="U$2" gate="G$1" pin="1"/>
-</segment>
-<segment>
 <pinref part="U$4" gate="G$1" pin="VCC"/>
 <wire x1="157.48" y1="17.78" x2="147.32" y2="17.78" width="0.1524" layer="91"/>
 <pinref part="SUPPLY5" gate="G$1" pin="VCC"/>
@@ -2107,6 +1969,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pinref part="C3" gate="G$1" pin="1"/>
 <wire x1="147.32" y1="15.24" x2="147.32" y2="17.78" width="0.1524" layer="91"/>
 <junction x="147.32" y="17.78"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="VCC"/>
+<wire x1="86.36" y1="91.44" x2="93.98" y2="91.44" width="0.1524" layer="91"/>
+<label x="96.52" y="91.44" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -2168,8 +2035,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <net name="SENSOR" class="0">
 <segment>
 <pinref part="U$1" gate="G$1" pin="AOUT"/>
-<wire x1="114.3" y1="101.6" x2="119.38" y2="101.6" width="0.1524" layer="91"/>
-<label x="119.38" y="101.6" size="1.778" layer="95"/>
+<wire x1="86.36" y1="88.9" x2="93.98" y2="88.9" width="0.1524" layer="91"/>
+<label x="96.52" y="88.9" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="U$3" gate="G$1" pin="(PCINT1/AIN0/ADC1)PA1"/>
@@ -2286,40 +2153,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <label x="147.32" y="81.28" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$2" class="0">
-<segment>
-<pinref part="U$5" gate="G$1" pin="L"/>
-<wire x1="45.72" y1="104.14" x2="43.18" y2="104.14" width="0.1524" layer="91"/>
-<pinref part="U$2" gate="G$1" pin="2"/>
-</segment>
-</net>
-<net name="V5" class="0">
-<segment>
-<pinref part="U$5" gate="G$1" pin="VOUT"/>
-<wire x1="71.12" y1="104.14" x2="73.66" y2="104.14" width="0.1524" layer="91"/>
-<pinref part="U$5" gate="G$1" pin="FB"/>
-<wire x1="73.66" y1="104.14" x2="78.74" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="78.74" y1="104.14" x2="86.36" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="71.12" y1="99.06" x2="73.66" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="99.06" x2="73.66" y2="104.14" width="0.1524" layer="91"/>
-<junction x="73.66" y="104.14"/>
-<pinref part="C5" gate="G$1" pin="1"/>
-<wire x1="78.74" y1="98.552" x2="78.74" y2="104.14" width="0.1524" layer="91"/>
-<junction x="78.74" y="104.14"/>
-<label x="86.36" y="104.14" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U$1" gate="G$1" pin="VCC"/>
-<wire x1="114.3" y1="104.14" x2="119.38" y2="104.14" width="0.1524" layer="91"/>
-<label x="119.38" y="104.14" size="1.778" layer="95"/>
-<label x="119.38" y="104.14" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="U$3" gate="G$1" pin="(PCINT0/AREF/ADC0)PA0"/>
-<wire x1="91.44" y1="7.62" x2="96.52" y2="7.62" width="0.1524" layer="91"/>
-<label x="96.52" y="7.62" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="N$1" class="0">
 <segment>
 <pinref part="R2" gate="G$1" pin="1"/>
@@ -2354,26 +2187,11 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </net>
 <net name="N$5" class="0">
 <segment>
-<pinref part="C5" gate="G$1" pin="2"/>
-<wire x1="78.74" y1="90.932" x2="78.74" y2="78.74" width="0.1524" layer="91"/>
-<pinref part="U$5" gate="G$1" pin="GND"/>
-<wire x1="45.72" y1="88.9" x2="43.18" y2="88.9" width="0.1524" layer="91"/>
-<pinref part="C6" gate="G$1" pin="2"/>
-<wire x1="30.48" y1="88.392" x2="30.48" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="30.48" y1="78.74" x2="43.18" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="43.18" y1="78.74" x2="78.74" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="78.74" y1="78.74" x2="91.44" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="91.44" y1="78.74" x2="91.44" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="91.44" y1="86.36" x2="91.44" y2="68.58" width="0.1524" layer="91"/>
 <pinref part="U$9" gate="G$1" pin="D"/>
 <wire x1="91.44" y1="68.58" x2="86.36" y2="68.58" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="GND"/>
-<wire x1="114.3" y1="99.06" x2="119.38" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="99.06" x2="119.38" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="119.38" y1="78.74" x2="91.44" y2="78.74" width="0.1524" layer="91"/>
-<junction x="91.44" y="78.74"/>
-<wire x1="43.18" y1="88.9" x2="43.18" y2="78.74" width="0.1524" layer="91"/>
-<junction x="43.18" y="78.74"/>
-<junction x="78.74" y="78.74"/>
+<wire x1="86.36" y1="86.36" x2="91.44" y2="86.36" width="0.1524" layer="91"/>
 </segment>
 </net>
 </nets>
@@ -2382,8 +2200,6 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <errors>
 <approved hash="202,1,-38.1,60.96,U$7,2,,,,"/>
 <approved hash="202,1,-12.7,60.96,U$7,4,,,,"/>
-<approved hash="104,1,114.3,104.14,U$1,VCC,V5,,,"/>
-<approved hash="104,1,114.3,99.06,U$1,GND,N$5,,,"/>
 </errors>
 </schematic>
 </drawing>
