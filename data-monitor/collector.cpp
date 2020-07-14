@@ -27,24 +27,24 @@ RF24 radio(RPI_V2_GPIO_P1_15, BCM2835_SPI_CS0, BCM2835_SPI_SPEED_4MHZ);
 
 /********************************/
 
-int readStatusCommand(uint8_t *data) {
+int handleStatusCommand(uint32_t *payload) {
   uint16_t address;
   uint32_t cycles;
   uint32_t moisture;  
 
   // Read 2 bytes of address
-  address = data[1] << 8;
-  address |= data[2];
+  address = payload[1] << 8;
+  address |= payload[2];
 
   // Read 3 bytes of cycles
-  cycles = data[3] << 16;
-  cycles |= data[4] << 8;
-  cycles |= data[5];
+  cycles = payload[3] << 16;
+  cycles |= payload[4] << 8;
+  cycles |= payload[5];
 
   // Read 3 byes of moisture
-  moisture = data[6] << 16;
-  moisture |= data[7] << 8;
-  moisture |= data[8];
+  moisture = payload[6] << 16;
+  moisture |= payload[7] << 8;
+  moisture |= payload[8];
 
   printf("Got payload:\n");
   printf("\taddress: %04x\n", address);
@@ -73,7 +73,7 @@ int readCommand(void) {
     radio.read(command, 9*sizeof(uint8_t));
 
     if (command[0] == COMMAND_STATUS) {
-      readStatusCommand(command);
+        handleStatusCommand(command);
       result = 1;
     }
 
