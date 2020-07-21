@@ -9,137 +9,187 @@
 #include <unistd.h>
 #include <RF24/RF24.h>
 
-
 using namespace std;
 
 #define SELF_RADIO_ADDR (uint8_t *) "1Node"
 #define REMOTE_RADIO_ADDR (uint8_t *) "2Node"
 
+// Our (the collector) ID
+#define SELF_ID 0x8080
+
 #define COMMAND_STATUS 0x01
+#define COMMAND_FIND_COLLECTOR 0x02
+
+#define IDX_CMD 0
+#define IDX_SENSOR_ID 1
+#define IDX_COLLECTOR_ID 2
+#define IDX_MESG_CNTR 3
+#define IDX_RETRY_CNTR 4
+#define IDX_DATA_1 5
+#define IDX_DATA_2 6
+#define IDX_DATA_3 7
+
+#define RESPONSE_SUCCESS 1
+#define RESPONSE_FAIL 0
+
+// InfluxDB
+
+#define INFLUX_HOST "192.168.1.79"
+#define INFLUX_PORT 8086
+#define INFLUX_DB_NAME "plants"
 
 /****************** Raspberry Pi ***********************/
 
 // Radio CE Pin, CSN Pin, SPI Speed
-// See http://www.airspayce.com/mikem/bcm2835/group__constants.html#ga63c029bd6500167152db4e57736d0939 and the related enumerations for pin information.
-
+// See http://www.airspayce.com/mikem/bcm2835/group__constants.html#ga63c029bd6500167152db4e57736d0939
+// and the related enumerations for pin information.
+//
 // Setup for GPIO 22 CE and CE0 CSN with SPI Speed @ 4Mhz
 RF24 radio(RPI_V2_GPIO_P1_15, BCM2835_SPI_CS0, BCM2835_SPI_SPEED_4MHZ);
 
 /********************************/
 
-int handleStatusCommand(uint32_t *payload) {
-  uint16_t address;
-  uint32_t cycles;
-  uint32_t moisture;  
+int getSelfID(void) {
+    return SELF_ID;
+}
 
-  // Read 2 bytes of address
-  address = payload[1] << 8;
-  address |= payload[2];
+const char* getInfluxHost(void) {
+    return INFLUX_HOST;
+}
 
-  // Read 3 bytes of cycles
-  cycles = payload[3] << 16;
-  cycles |= payload[4] << 8;
-  cycles |= payload[5];
+int getInfluxPort(void) {
+    return INFLUX_PORT;
+}
 
-  // Read 3 byes of moisture
-  moisture = payload[6] << 16;
-  moisture |= payload[7] << 8;
-  moisture |= payload[8];
+const char* getInfluxDBName(void) {
+    return INFLUX_DB_NAME;
+}
 
-  printf("Got payload:\n");
-  printf("\taddress: %04x\n", address);
-  printf("\tcycles: %d\n", cycles);
-  printf("\tmoisture: %d\n", moisture);
+void reply(uint32_t sensor_id, uint32_t value) {
+    uint32_t response[2] = {sensor_id, value};
 
-  char curl_cmd[255];
-  snprintf(curl_cmd, 255, "curl -i -XPOST 'http://192.168.1.79:8086/write?db=plants' --data-binary 'moisture,plant_id=%04x value=%d'", address, moisture);
-  printf("%s\n", curl_cmd);
-  system(curl_cmd);
+    radio.stopListening();
+    radio.write(response, sizeof(response));
+    radio.startListening();
+}
 
-  snprintf(curl_cmd, 255, "curl -i -XPOST 'http://192.168.1.79:8086/write?db=plants' --data-binary 'cycles,plant_id=%04x value=%d'", address, cycles);
-  printf("%s\n", curl_cmd);
-  system(curl_cmd);
+void handleFindCollectorCommand(uint32_t *payload) {
+    uint32_t id = payload[IDX_SENSOR_ID];
 
-  return 1;
+    printf("Handling command 'find collector'\n");
+
+    reply(id, getSelfID());
+}
+
+void handleStatusCommand(uint32_t *payload) {
+    uint32_t id, cycles, retries, vcc, moisture;
+
+    printf("Handling command 'status'\n");
+
+    id = payload[IDX_SENSOR_ID];
+    cycles = payload[IDX_MESG_CNTR];
+    retries = payload[IDX_RETRY_CNTR];
+    vcc = payload[IDX_DATA_1];
+    moisture = payload[IDX_DATA_2];
+
+    printf("Got payload for cmd(%d):\n", COMMAND_STATUS);
+    printf("\tsensor id: %04x\n", id);
+    printf("\tretries: %d\n", retries);
+    printf("\tvcc: %d\n", vcc);
+    printf("\tmoisture: %d\n", moisture);
+
+    char base_cmd[255];
+    const char *base_tmpl = "curl -i -XPOST 'http://%s:%d/write?db=%s' --data-binary";
+    snprintf(base_cmd, 255, base_tmpl, getInfluxHost(), getInfluxPort(), getInfluxDBName());
+
+    char full_cmd[255];
+    const char *full_tmpl = "%s '%s,plant_id=%04x value=%d'";
+
+    snprintf(full_cmd, 255, full_tmpl, base_cmd, "moisture", id, moisture);
+    printf("%s\n", full_cmd);
+    system(full_cmd);
+
+    snprintf(full_cmd, 255, full_tmpl, base_cmd, "cycles", id, cycles);
+    printf("%s\n", full_cmd);
+    system(full_cmd);
+
+    snprintf(full_cmd, 255, full_tmpl, base_cmd, "battery", id, vcc);
+    printf("%s\n", full_cmd);
+    system(full_cmd);
+
+    snprintf(full_cmd, 255, full_tmpl, base_cmd, "retries", id, retries);
+    printf("%s\n", full_cmd);
+    system(full_cmd);
+
+    reply(id, RESPONSE_SUCCESS);
 }
 
 int readCommand(void) {
-  unsigned long result = 0;
+    unsigned long result = 0;
+    uint32_t payload[8];
 
-  while (radio.available()) {
-    uint8_t *command;
-    command = (uint8_t *) malloc(9*sizeof(uint8_t));
+    while (radio.available()) {
+        radio.read(&payload, sizeof(payload));
 
-    radio.read(command, 9*sizeof(uint8_t));
+        // Ignore any message that wasn't meant for us
+        if (payload[IDX_COLLECTOR_ID] != SELF_ID) {
+            printf("Skipping message not meant for us (ID:%d != our ID:%d)\n", payload[IDX_COLLECTOR_ID], SELF_ID);
+            continue;
+        }
 
-    if (command[0] == COMMAND_STATUS) {
-        handleStatusCommand(command);
-      result = 1;
+        switch (payload[IDX_CMD]) {
+            case COMMAND_STATUS:
+                handleStatusCommand(payload);
+                break;
+            case COMMAND_FIND_COLLECTOR:
+                handleFindCollectorCommand(payload);
+                break;
+        }
     }
 
-    free(command);
-  }
+    radio.stopListening();
+    radio.write(&result, sizeof(unsigned long));
+    radio.startListening();
 
-  radio.stopListening();
-  radio.write(&result, sizeof(unsigned long));
-  radio.startListening();
-
-  return 1;
-}
-
-void pongBack(void) {
-  // Dump the payloads until we've gotten everything
-  unsigned long got_time;
-
-  // Fetch the payload, and see if this was the last one.
-  while (radio.available()) {
-    radio.read(&got_time, sizeof(unsigned long));
-  }
-  radio.stopListening();
-
-  radio.write( &got_time, sizeof(unsigned long) );
-
-  // Now, resume listening so we catch the next packets.
-  radio.startListening();
-
-  // Spew it
-  printf("Got payload(%d) %lu...\n",sizeof(unsigned long), got_time);
+    return 1;
 }
 
 int main(int argc, char** argv) {
-  cout << "RF24/examples/GettingStarted/\n";
+    cout << "RF24/examples/GettingStarted/\n";
 
-  // Setup and configure rf radio
-  radio.begin();
+    // Setup and configure rf radio
+    radio.begin();
 
-  // optionally, increase the delay between retries & # of retries
-  radio.setRetries(15, 15);
+    // optionally, increase the delay between retries & # of retries
+    radio.setRetries(15, 15);
 
-  // Dump the configuration of the rf unit for debugging
-  radio.printDetails();
+    //radio.setDataRate(RF24_1MBPS);
+    radio.setDataRate(RF24_250KBPS);
 
-  /***********************************/
-  // This simple sketch opens two pipes for these two nodes to communicate
-  // back and forth.
+    // Dump the configuration of the rf unit for debugging
+    radio.printDetails();
 
-  radio.openWritingPipe(REMOTE_RADIO_ADDR);
-  radio.openReadingPipe(1, SELF_RADIO_ADDR);
-	
-  radio.startListening();
-	
-  while (1) {
-    // Pong back role.  Receive each packet, dump it out, and send it back
-			
-    // if there is data ready
-    if (radio.available()) {
-      //pongBack();
-      readCommand();
+    /***********************************/
+    // This simple sketch opens two pipes for these two nodes to communicate
+    // back and forth.
 
-      //Delay after payload responded to, minimize RPi CPU time
-      delay(925);
+    radio.openWritingPipe(REMOTE_RADIO_ADDR);
+    radio.openReadingPipe(1, SELF_RADIO_ADDR);
+
+    radio.startListening();
+
+    while (1) {
+        // Pong back role.  Receive each packet, dump it out, and send it back
+
+        // if there is data ready
+        if (radio.available()) {
+            readCommand();
+        }
+
+        //Delay after payload responded to, minimize RPi CPU time
+        delay(925);
     }
-  }
 
-  return 0;
+    return 0;
 }
 
