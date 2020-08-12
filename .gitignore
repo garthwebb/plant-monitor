@@ -61,7 +61,7 @@ dkms.conf
 /test/
 
 # Ignore Mac OS poops
-/.DS_Store
+.DS_Store
 
 # Don't include the Clion debug dir
 cmake-build-debug/
